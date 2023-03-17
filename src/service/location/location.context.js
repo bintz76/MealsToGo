@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { locationRequest, locationTransform } from "./location.service";
 
 export const LocationContext = React.createContext();
@@ -20,8 +20,10 @@ export const LocationContextProvider = ({ children }) => {
       .then((result) => {
         setIsLoading(false);
         setLocation(result);
+        console.log(result);
       })
       .catch((error) => {
+        setIsLoading(false);
         setError(error);
       });
   };
