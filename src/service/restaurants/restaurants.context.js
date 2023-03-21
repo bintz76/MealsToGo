@@ -1,10 +1,17 @@
-import React, { useState, createContext, useEffect, useContext } from "react";
-import { LocationContext } from "../location/location.context";
+import React, {
+  useState,
+  useContext,
+  createContext,
+  useEffect,
+  useMemo,
+} from "react";
 
 import {
   restaurantsRequest,
   restaurantsTransform,
-} from "./rastaurants.service";
+} from "../restaurants/rastaurants.service";
+
+import { LocationContext } from "../location/location.context";
 
 export const RestaurantsContext = createContext();
 
@@ -12,19 +19,18 @@ export const RestaurantsContextProvider = ({ children }) => {
   const [restaurants, setRestaurants] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-
   const { location } = useContext(LocationContext);
 
   const retrieveRestaurants = (loc) => {
     setIsLoading(true);
     setRestaurants([]);
-    // 실제 api 요청인척 timeout걸기
+
     setTimeout(() => {
       restaurantsRequest(loc)
         .then(restaurantsTransform)
-        .then((result) => {
+        .then((results) => {
           setIsLoading(false);
-          setRestaurants(result);
+          setRestaurants(results);
         })
         .catch((err) => {
           setIsLoading(false);
@@ -33,19 +39,16 @@ export const RestaurantsContextProvider = ({ children }) => {
     }, 2000);
   };
   useEffect(() => {
-    // const locationString = `${location.lat}, ${location.log}`;
-    console.log(location);
-    // retrieveRestaurants();
     if (location) {
-      const locationString = `${location.lat}, ${location.lng}`;
+      const locationString = `${location.lat},${location.lng}`;
       retrieveRestaurants(locationString);
     }
   }, [location]);
-  // console.log(restaurants);
+
   return (
     <RestaurantsContext.Provider
       value={{
-        restaurants: restaurants,
+        restaurants,
         isLoading,
         error,
       }}
